@@ -48,7 +48,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\Software\opencv\build\install\x64\vc16\lib;D:\AI\libtorch\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>c10.lib;c10_cuda.lib;caffe2_module_test_dynamic.lib;caffe2_nvrtc.lib;clog.lib;cpuinfo.lib;libprotobuf.lib;libprotobuf-lite.lib;libprotoc.lib;torch.lib;opencv_core420.lib;opencv_highgui420.lib;opencv_imgproc420.lib;opencv_videoio420.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>torch.lib;c10.lib;opencv_core420.lib;opencv_highgui420.lib;opencv_imgproc420.lib;opencv_videoio420.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
