@@ -130,14 +130,16 @@ cv::Rect Tracker::track(cv::Mat frame) {
 	torch::List<torch::Tensor> pre_xf = backbone_forward(x_crop);
 	torch::List<torch::Tensor> xf = neck.forward({ pre_xf }).toTensorList();
 
-	std::vector<torch::IValue> res = rpns[0].forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
-	torch::Tensor cls = res[0].toTensor().cuda() * rpn_weights[0];
-	torch::Tensor loc = res[1].toTensor().cuda() * rpn_weights[0];
-	for (int i = 1; i < 3; i++) {
+	torch::Tensor cls, loc;
+	for (int i = 0; i < rpns.size(); i++) {
 		std::vector<torch::IValue> res = rpns[i].forward({ zf.get(i), xf.get(i) }).toTuple()->elements();
-		cls += res[0].toTensor().cuda() * rpn_weights[i];
-		loc += res[1].toTensor().cuda() * rpn_weights[i];
+		torch::Tensor c = res[0].toTensor().cuda();
+		torch::Tensor l = res[1].toTensor().cuda();
+		if (cls.numel() > 0) cls += c; else cls = c;
+		if (loc.numel() > 0) loc += l; else loc = l;
 	}
+	cls /= (float)rpns.size();
+	loc /= (float)rpns.size();
 
 	torch::Tensor score = convert_score(cls);
 	torch::Tensor pred_bbox = convert_bbox(loc);
@@ -211,4 +213,19 @@ void Tracker::init(cv::Mat frame, cv::Rect roi) {
 	torch::Tensor z_crop = get_subwindow(frame, Tracker::EXEMPLAR_SIZE, calculate_s_z());
 	torch::List<torch::Tensor> pre_zf = backbone_forward(z_crop);
 	zf = neck.forward({ pre_zf }).toTensorList();
+}
+
+// TODO: https://gitlab.kikaitech.io/kikai-ai/siam-trackers/issues/11
+void Tracker::load_networks_instantly() {
+	torch::Tensor z_crop = torch::zeros({ 1, 3, Tracker::EXEMPLAR_SIZE, Tracker::EXEMPLAR_SIZE }).cuda();
+	torch::List<torch::Tensor> pre_zf = backbone_forward(z_crop);
+	torch::List<torch::Tensor> zf = neck.forward({ pre_zf }).toTensorList();
+
+	torch::Tensor x_crop = torch::zeros({ 1, 3, Tracker::INSTANCE_SIZE, Tracker::INSTANCE_SIZE }).cuda();
+	torch::List<torch::Tensor> pre_xf = backbone_forward(x_crop);;
+	torch::List<torch::Tensor> xf = neck.forward({ pre_xf }).toTensorList();
+
+	for (int i = 0; i < rpns.size(); i++) {
+		rpns[i].forward({ zf.get(i), xf.get(i) });
+	}
 }

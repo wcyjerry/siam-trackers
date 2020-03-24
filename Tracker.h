@@ -21,6 +21,7 @@ class Tracker {
     torch::List<torch::Tensor> backbone_forward(torch::Tensor crop);
 
     // TODO: What are these?
+    void load_networks_instantly();
     void generate_anchors();
     int calculate_s_z();
     torch::Tensor get_subwindow(cv::Mat frame, int exampler_size, int original_size);
@@ -46,6 +47,7 @@ public:
 
     Tracker(std::vector<TorchModule> backbone, TorchModule neck, std::vector<TorchModule> rpns) : backbone(backbone), neck(neck), rpns(rpns) {
         generate_anchors();
+        load_networks_instantly();
     };
 
     void init(cv::Mat frame, cv::Rect roi);
