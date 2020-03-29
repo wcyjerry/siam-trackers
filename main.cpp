@@ -8,20 +8,16 @@ const cv::Scalar COLOR_GREEN(0, 255, 0);
 int main() {
     _putenv_s("OMP_NUM_THREADS", "8");
 
+    // TODO: Should we `eval` these modules?
     std::vector<TorchModule> backbone;
     for (int i = 0; i < 8; i++) {
         TorchModule layer = torch::jit::load("siamrpnpp_backbone_mobilev2_layer" + std::to_string(i) + ".pt", torch::kCUDA);
-        layer.eval(); // TODO: Are these `eval` calls really needed?
         backbone.push_back(layer);
     }
-
     TorchModule neck = torch::jit::load("siamrpnpp_neck_adjust_all_layer.pt", torch::kCUDA);
-    neck.eval();
-
     std::vector<TorchModule> rpns;
     for (int i = 0; i < 3; i++) {
         TorchModule rpn = torch::jit::load("siamrpnpp_rpn_head_multi_rpn" + std::to_string(i + 2) + ".pt", torch::kCUDA);
-        rpn.eval();
         rpns.push_back(rpn);
     }
     Tracker tracker(backbone, neck, rpns);
