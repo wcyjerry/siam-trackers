@@ -11,6 +11,9 @@ class Tracker {
 
     cv::Rect bounding_box;
 
+    bool ready_to_track = false;
+    std::string obj_id;
+
     // TODO: What are these?
     cv::Scalar channel_average;
     torch::List<torch::Tensor> zf;
@@ -50,6 +53,19 @@ public:
         load_networks_instantly();
     };
 
-    void init(cv::Mat frame, cv::Rect roi);
+    void init(cv::Mat frame, cv::Rect roi, std::string id);
     cv::Rect track(cv::Mat frame);
+
+    bool is_ready_to_track() {
+        return ready_to_track;
+    }
+
+    void stop_tracking() {
+        // TODO: More proper cleanups
+        ready_to_track = false;
+    }
+
+    std::string get_obj_id() {
+        return obj_id;
+    }
 };

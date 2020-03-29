@@ -206,13 +206,16 @@ void Tracker::generate_anchors() {
 	window = torch::ger(hanning, hanning).flatten().repeat(anchor_num).reshape({ score_size * score_size * anchor_num, 1 });
 }
 
-void Tracker::init(cv::Mat frame, cv::Rect roi) {
+void Tracker::init(cv::Mat frame, cv::Rect roi, std::string id) {
 	bounding_box = roi;
 	channel_average = cv::mean(frame);
 
 	torch::Tensor z_crop = get_subwindow(frame, Tracker::EXEMPLAR_SIZE, calculate_s_z());
 	torch::List<torch::Tensor> pre_zf = backbone_forward(z_crop);
 	zf = neck.forward({ pre_zf }).toTensorList();
+
+	ready_to_track = true;
+	obj_id = id;
 }
 
 // TODO: https://gitlab.kikaitech.io/kikai-ai/siam-trackers/issues/11
