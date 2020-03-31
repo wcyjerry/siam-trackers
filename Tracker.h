@@ -17,7 +17,6 @@ class Tracker {
     // TODO: What are these?
     cv::Scalar channel_average;
     torch::List<torch::Tensor> zf;
-    torch::Tensor rpn_weights = torch::softmax(torch::tensor(torch::ArrayRef<float>({ 1, 1, 1 })), 0);
     torch::Tensor anchors;
     torch::Tensor window;
 
