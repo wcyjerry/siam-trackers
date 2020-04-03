@@ -1,2 +1,2 @@
-# pysot
+# siam-trackers
 
