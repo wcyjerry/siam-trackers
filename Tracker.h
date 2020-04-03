@@ -52,7 +52,7 @@ public:
         load_networks_instantly();
     };
 
-    void init(cv::Mat frame, cv::Rect roi, std::string id);
+    void init(cv::Mat frame, cv::Rect roi, std::string id = "");
     cv::Rect track(cv::Mat frame);
 
     bool is_ready_to_track() {
