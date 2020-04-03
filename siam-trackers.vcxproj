@@ -48,7 +48,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\Software\opencv\build\install\x64\vc16\lib;C:\Program Files (x86)\Caffe2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>c10.lib;torch_cpu.lib;torch_cuda.lib;/INCLUDE:?warp_size@cuda@at@@YAHXZ;opencv_core420.lib;opencv_highgui420.lib;opencv_imgproc420.lib;opencv_videoio420.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>c10.lib;torch_cpu.lib;torch_cuda.lib;/INCLUDE:?warp_size@cuda@at@@YAHXZ;opencv_core430.lib;opencv_highgui430.lib;opencv_imgproc430.lib;opencv_videoio430.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
