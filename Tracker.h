@@ -13,6 +13,7 @@ class Tracker {
 
     bool ready_to_track = false;
     std::string obj_id;
+    std::string obj_class;
 
     // TODO: What are these?
     cv::Scalar channel_average;
@@ -52,7 +53,7 @@ public:
         load_networks_instantly();
     };
 
-    void init(cv::Mat frame, cv::Rect roi, std::string id = "");
+    void init(cv::Mat frame, cv::Rect roi, std::string obj_id = "", std::string obj_class = "");
     cv::Rect track(cv::Mat frame);
 
     bool is_ready_to_track() {
@@ -66,5 +67,9 @@ public:
 
     std::string get_obj_id() {
         return obj_id;
+    }
+
+    std::string get_obj_class() {
+        return obj_class;
     }
 };
