@@ -5,7 +5,7 @@
 
 const cv::Scalar COLOR_GREEN(0, 255, 0);
 
-int main() {
+int main(int argc, char **argv) {
     _putenv_s("OMP_NUM_THREADS", "8");
 
     // TODO: Should we `eval` these modules?
@@ -22,7 +22,7 @@ int main() {
     }
     Tracker tracker(backbone, neck, rpns);
 
-    std::string src = "bag.avi";
+    std::string src = argc > 1 ? argv[1] : "bag.avi";
     cv::VideoCapture video_cap(src);
 
     cv::Mat frame;
