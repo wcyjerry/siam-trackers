@@ -1,7 +1,7 @@
 #include <iostream>
 #include <torch/script.h>
 #include <opencv2/opencv.hpp>
-#include "Tracker.h"
+#include "TrackerSiamRPNPP.h"
 
 const cv::Scalar COLOR_GREEN(0, 255, 0);
 
@@ -20,7 +20,8 @@ int main(int argc, char **argv) {
         TorchModule rpn = torch::jit::load("siamrpnpp_rpn_head_multi_rpn" + std::to_string(i + 2) + ".pt", torch::kCUDA);
         rpns.push_back(rpn);
     }
-    Tracker tracker(backbone, neck, rpns);
+    TrackerSiamRPNPP tracker(backbone, neck, rpns);
+    tracker.load_networks_instantly();
 
     std::string src = argc > 1 ? argv[1] : "bag.avi";
     cv::VideoCapture video_cap(src);

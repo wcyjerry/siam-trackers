@@ -6,33 +6,15 @@
 typedef torch::jit::script::Module TorchModule;
 
 class Tracker {
-    TorchModule neck;
-    std::vector<TorchModule> backbone, rpns;
-
-    cv::Rect bounding_box;
 
     bool ready_to_track = false;
     std::string obj_id;
     int obj_class_id;
     std::string obj_class_name;
 
-    // TODO: What are these?
-    cv::Scalar channel_average;
-    torch::List<torch::Tensor> zf;
-    torch::Tensor anchors;
-    torch::Tensor window;
+    virtual torch::List<torch::Tensor> backbone_forward(torch::Tensor crop) = 0;
 
-    torch::List<torch::Tensor> backbone_forward(torch::Tensor crop);
-
-    // TODO: What are these?
-    void load_networks_instantly();
-    void generate_anchors();
-    int calculate_s_z();
-    torch::Tensor get_subwindow(cv::Mat frame, int exampler_size, int original_size);
-    torch::Tensor convert_score(torch::Tensor cls);
-    torch::Tensor convert_bbox(torch::Tensor loc);
-
-public:
+protected:
     // TODO: What are these?
     static const int BACKBONE_USED_LAYERS_NUM = 3;
     static const int BACKBONE_USED_LAYERS[BACKBONE_USED_LAYERS_NUM];
@@ -49,13 +31,37 @@ public:
     static const float TRACK_LR;
     static const int TRACK_BASE_SIZE = 8;
 
-    Tracker(std::vector<TorchModule> backbone, TorchModule neck, std::vector<TorchModule> rpns) : backbone(backbone), neck(neck), rpns(rpns) {
+    TorchModule neck;
+    cv::Rect bounding_box;
+
+    Tracker(TorchModule neck) : neck(neck) {
         generate_anchors();
-        load_networks_instantly();
     };
 
-    void init(cv::Mat frame, cv::Rect roi, std::string obj_id = "", int obj_class_id = -1, std::string obj_class_name = "");
-    cv::Rect track(cv::Mat frame);
+    // TODO: What are these
+    torch::Tensor change(torch::Tensor r);
+    torch::Tensor sz(torch::Tensor w, torch::Tensor h);
+    torch::Tensor hann_window(int window_length);
+
+    // TODO: What are these?
+    cv::Scalar channel_average;
+    torch::List<torch::Tensor> zf;
+    torch::Tensor anchors;
+    torch::Tensor window;
+
+    // TODO: What are these?
+    void generate_anchors();
+    int calculate_s_z();
+    torch::Tensor get_subwindow(cv::Mat frame, int exampler_size, int original_size);
+    torch::Tensor convert_score(torch::Tensor cls);
+    torch::Tensor convert_bbox(torch::Tensor loc);
+
+public:
+
+    virtual void init(cv::Mat frame, cv::Rect roi, std::string obj_id = "", int obj_class_id = -1, std::string obj_class_name = "");
+    // TODO: https://gitlab.kikaitech.io/kikai-ai/siam-trackers/issues/11
+    virtual void load_networks_instantly() = 0;
+    virtual cv::Rect track(cv::Mat frame) = 0;
 
     bool is_ready_to_track() {
         return ready_to_track;
