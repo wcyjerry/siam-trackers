@@ -1,7 +1,7 @@
 #include "TrackerSiamMask.h"
 
-const int TrackerSiamMask::BACKBONE_USED_LAYERS[BACKBONE_USED_LAYERS_NUM] = { 2, 6, 7 };
-const float TrackerSiamMask::MASK_THRESHOLD = 0.25f;
+const int TrackerSiamMask::BACKBONE_USED_LAYERS[BACKBONE_USED_LAYERS_NUM] = { 2, 4, 5 };
+const float TrackerSiamMask::MASK_THRESHOLD = 0.12f;
 
 torch::List<torch::Tensor> TrackerSiamMask::backbone_forward(torch::Tensor crop) {
 	torch::Tensor x = backbone_conv.forward({ crop }).toTensor();
