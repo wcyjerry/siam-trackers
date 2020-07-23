@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     TorchModule backbone_conv = torch::jit::load("siammask_backbone_resnet_conv1.pt", torch::kCUDA);
     TorchModule backbone_bn = torch::jit::load("siammask_backbone_resnet_bn1.pt", torch::kCUDA);
     std::vector<TorchModule> backbone_layers;
-    for (int i = 1; i < 7; i++) {
+    for (int i = 1; i < 9; i++) {
         TorchModule layer = torch::jit::load("siammask_backbone_resnet_layer" + std::to_string(i) + ".pt", torch::kCUDA);
         backbone_layers.push_back(layer);
     }
