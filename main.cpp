@@ -54,8 +54,9 @@ int main(int argc, char **argv) {
         }
         else {
             frame_count++;
-            cv::Mat mask = tracker.track(frame);
-            cv::addWeighted(frame, 0.77, mask, 0.23, -1, frame);
+            track_result res = tracker.track(frame);
+            // cv::rectangle(frame, res.bbox, COLOR_GREEN, 3);
+            cv::addWeighted(frame, 0.77, res.mask, 0.23, -1, frame);
             cv::putText(
                 frame,
                 std::to_string(frame_count / (std::chrono::duration<double>(std::chrono::steady_clock::now() - time_start)).count()) + " FPS",

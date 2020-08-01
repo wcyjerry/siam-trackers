@@ -33,7 +33,7 @@ void TrackerSiamMask::load_networks_instantly() {
 	rpn_head.forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
 }
 
-cv::Mat TrackerSiamMask::track(cv::Mat frame) {
+track_result TrackerSiamMask::track(cv::Mat frame) {
 	cv::Size frame_size = frame.size();
 
 	// TODO: What are these?
@@ -93,11 +93,12 @@ cv::Mat TrackerSiamMask::track(cv::Mat frame) {
 	cv::warpAffine(mat_mask, crop, mapping, frame_size, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
 	crop = (crop > MASK_THRESHOLD) * 255;
 
+	track_result res;
 	cv::Mat empty_channel = crop * 0;
 	std::vector<cv::Mat> channels { crop, empty_channel, empty_channel };
-	cv::merge(channels, mat_mask);
+	cv::merge(channels, res.mask);
 
 	update_bbox(pred_bbox, best_idx, scale_z, penalty, score, frame_size);
 
-	return mat_mask;
+	return res;
 }

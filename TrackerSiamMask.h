@@ -23,5 +23,5 @@ public:
 	}
 
 	void load_networks_instantly();
-	cv::Mat track(cv::Mat frame);
+	virtual track_result track(cv::Mat frame);
 };

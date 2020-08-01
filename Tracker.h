@@ -5,6 +5,11 @@
 
 typedef torch::jit::script::Module TorchModule;
 
+struct track_result {
+    cv::Rect bbox;
+    cv::Mat mask;
+};
+
 class Tracker {
 
     bool ready_to_track = false;
@@ -70,6 +75,7 @@ public:
     virtual void init(cv::Mat frame, cv::Rect roi, std::string obj_id = "", int obj_class_id = -1, std::string obj_class_name = "");
     // TODO: https://gitlab.kikaitech.io/kikai-ai/siam-trackers/issues/11
     virtual void load_networks_instantly() = 0;
+    virtual track_result track(cv::Mat frame) = 0;
 
     bool is_ready_to_track() {
         return ready_to_track;

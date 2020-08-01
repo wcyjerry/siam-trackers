@@ -18,5 +18,5 @@ public:
 	}
 
 	void load_networks_instantly();
-	cv::Rect track(cv::Mat frame);
+	virtual track_result track(cv::Mat frame);
 };

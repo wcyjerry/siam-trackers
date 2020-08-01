@@ -29,7 +29,7 @@ torch::List<torch::Tensor> TrackerSiamRPNPP::backbone_forward(torch::Tensor crop
 	return out;
 }
 
-cv::Rect TrackerSiamRPNPP::track(cv::Mat frame) {
+track_result TrackerSiamRPNPP::track(cv::Mat frame) {
 	float s_z = calculate_s_z();
 	float scale_z = EXEMPLAR_SIZE / s_z;
 	int s_x = round(s_z * INSTANCE_SIZE / EXEMPLAR_SIZE);
@@ -49,5 +49,7 @@ cv::Rect TrackerSiamRPNPP::track(cv::Mat frame) {
 	cls /= (float)rpns.size();
 	loc /= (float)rpns.size();
 
-	return get_final_bbox(frame.size(), scale_z, cls, loc);
+	track_result res;
+	res.bbox = get_final_bbox(frame.size(), scale_z, cls, loc);
+	return res;
 }
