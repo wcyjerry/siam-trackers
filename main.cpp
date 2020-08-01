@@ -63,7 +63,10 @@ int main(int argc, char **argv) {
             }
 
             if (!res.mask.empty()) {
-                cv::addWeighted(frame, 0.77, res.mask, 0.23, -1, frame);
+                std::vector<cv::Mat> channels{ res.mask * COLOR_BLUE[0], res.mask * COLOR_BLUE[1], res.mask * COLOR_BLUE[2] };
+                cv::Mat colored_mask;
+                cv::merge(channels, colored_mask);
+                cv::addWeighted(frame, 0.77, colored_mask, 0.23, -1, frame);
             }
 
             cv::putText(
