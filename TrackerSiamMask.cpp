@@ -97,7 +97,7 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 
 	track_result res;
 	cv::Mat empty_channel = crop * 0;
-	std::vector<cv::Mat> channels { empty_channel, crop, empty_channel };
+	std::vector<cv::Mat> channels { crop, empty_channel, empty_channel };
 	cv::merge(channels, res.mask);
 
 	cv::Mat target_mask = crop > MASK_THRESHOLD;

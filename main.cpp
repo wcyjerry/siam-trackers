@@ -4,7 +4,7 @@
 #include "TrackerSiamRPNPP.h"
 #include "TrackerSiamMask.h"
 
-const cv::Scalar COLOR_GREEN(0, 255, 0);
+const cv::Scalar COLOR_BLUE(255, 0, 0);
 
 int main(int argc, char **argv) {
     _putenv_s("OMP_NUM_THREADS", "8");
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
             cv::Point2f vertices[4];
             res.bbox.points(vertices);
             for (int i = 0; i < 4; i++) {
-                line(frame, vertices[i], vertices[(i + 1) % 4], COLOR_GREEN, 3);
+                line(frame, vertices[i], vertices[(i + 1) % 4], COLOR_BLUE, 2);
             }
 
             if (!res.mask.empty()) {
@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
                 cv::Point(20, 20),
                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                 1.f,
-                COLOR_GREEN
+                COLOR_BLUE
             );
             cv::imshow(src, frame);
             cv::waitKey(1);
