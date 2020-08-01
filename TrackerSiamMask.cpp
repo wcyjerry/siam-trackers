@@ -89,20 +89,14 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 	float c = -a * back_box_x;
 	float d = -b * back_box_y;
 
+	track_result res;
 	cv::Mat mapping = (cv::Mat_<float>(2, 3) << a, 0, c, 0, b, d);
 	cv::Mat mat_mask = cv::Mat(MASK_OUTPUT_SIZE, MASK_OUTPUT_SIZE, CV_32F, mask.data_ptr());
-	cv::Mat crop;
-	cv::warpAffine(mat_mask, crop, mapping, frame_size, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
-	crop = (crop > MASK_THRESHOLD) * 255;
+	cv::warpAffine(mat_mask, res.mask, mapping, frame_size, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
+	res.mask = res.mask > MASK_THRESHOLD;
 
-	track_result res;
-	cv::Mat empty_channel = crop * 0;
-	std::vector<cv::Mat> channels { crop, empty_channel, empty_channel };
-	cv::merge(channels, res.mask);
-
-	cv::Mat target_mask = crop > MASK_THRESHOLD;
 	std::vector<cv::Mat> contours;
-	cv::findContours(target_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+	cv::findContours(res.mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
 	if (contours.size() > 0) {
 		cv::Mat largest_contour = contours[0];
 		double largest_contour_area = cv::contourArea(contours[0]);
@@ -120,7 +114,6 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 			res.bbox = rectToRotatedRect(bounding_box);
 		}
 	}
-
 
 	return res;
 }
