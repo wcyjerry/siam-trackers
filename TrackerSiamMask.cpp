@@ -88,14 +88,13 @@ cv::Mat TrackerSiamMask::track(cv::Mat frame) {
 	float d = -b * back_box_y;
 
 	cv::Mat mapping = (cv::Mat_<float>(2, 3) << a, 0, c, 0, b, d);
-	cv::Mat vector_mask = cv::Mat(MASK_OUTPUT_SIZE, MASK_OUTPUT_SIZE, CV_32F, mask.data_ptr());
+	cv::Mat mat_mask = cv::Mat(MASK_OUTPUT_SIZE, MASK_OUTPUT_SIZE, CV_32F, mask.data_ptr());
 	cv::Mat crop;
-	cv::warpAffine(vector_mask, crop, mapping, frame_size, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
+	cv::warpAffine(mat_mask, crop, mapping, frame_size, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
 	crop = (crop > MASK_THRESHOLD) * 255;
 
-	cv::Mat empty_channels = crop * 0;
-	std::vector<cv::Mat> channels { crop, empty_channels, empty_channels };
-	cv::Mat mat_mask;
+	cv::Mat empty_channel = crop * 0;
+	std::vector<cv::Mat> channels { crop, empty_channel, empty_channel };
 	cv::merge(channels, mat_mask);
 
 	update_bbox(pred_bbox, best_idx, scale_z, penalty, score, frame_size);
