@@ -6,7 +6,7 @@
 typedef torch::jit::script::Module TorchModule;
 
 struct track_result {
-    cv::Rect bbox;
+    cv::RotatedRect bbox;
     cv::Mat mask;
 };
 
@@ -50,6 +50,14 @@ protected:
         generate_anchors();
     };
 
+    cv::RotatedRect rectToRotatedRect(cv::Rect rect) {
+        return cv::RotatedRect(
+            cv::Point2f(rect.x + (float)rect.width / 2, rect.y + (float)rect.height / 2),
+            rect.size(),
+            0
+        );
+    }
+
     // TODO: What are these?
     cv::Scalar channel_average;
     torch::List<torch::Tensor> zf;
@@ -67,7 +75,6 @@ protected:
     torch::Tensor get_penalty(float scale_z, torch::Tensor pred_bbox);
     int get_best_idx(torch::Tensor penalty, torch::Tensor score);
     void update_bbox(torch::Tensor pred_bbox, int best_idx, float scale_z, torch::Tensor penalty, torch::Tensor score, cv::Size frame_size);
-    cv::Rect get_final_bbox(cv::Size frame_size, float scale_z, torch::Tensor cls, torch::Tensor loc);
     std::vector<int> unravel_index(int index, std::vector<int> shape);
 
 public:

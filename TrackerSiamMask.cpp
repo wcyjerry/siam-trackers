@@ -58,6 +58,8 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 	torch::Tensor penalty = get_penalty(scale_z, pred_bbox);
 	int best_idx = get_best_idx(penalty, score);
 
+	update_bbox(pred_bbox, best_idx, scale_z, penalty, score, frame_size);
+
 	std::vector<int> pos = unravel_index(best_idx, { 5, SCORE_SIZE, SCORE_SIZE });
 	int delta_x = pos[2], delta_y = pos[1];
 
@@ -95,10 +97,30 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 
 	track_result res;
 	cv::Mat empty_channel = crop * 0;
-	std::vector<cv::Mat> channels { crop, empty_channel, empty_channel };
+	std::vector<cv::Mat> channels { empty_channel, crop, empty_channel };
 	cv::merge(channels, res.mask);
 
-	update_bbox(pred_bbox, best_idx, scale_z, penalty, score, frame_size);
+	cv::Mat target_mask = crop > MASK_THRESHOLD;
+	std::vector<cv::Mat> contours;
+	cv::findContours(target_mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+	if (contours.size() > 0) {
+		cv::Mat largest_contour = contours[0];
+		double largest_contour_area = cv::contourArea(contours[0]);
+		for (int i = 1; i < contours.size(); i++) {
+			double area = cv::contourArea(contours[i]);
+			if (area > largest_contour_area) {
+				largest_contour = contours[i];
+				largest_contour_area = area;
+			}
+		}
+		if (largest_contour_area > 100) {
+			res.bbox = cv::minAreaRect(largest_contour);
+		}
+		else {
+			res.bbox = rectToRotatedRect(bounding_box);
+		}
+	}
+
 
 	return res;
 }

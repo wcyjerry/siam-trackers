@@ -198,12 +198,3 @@ void Tracker::update_bbox(torch::Tensor pred_bbox, int best_idx, float scale_z, 
 	bounding_box.x = std::max(0, std::min(bounding_box.x, frame_size.width)) - bounding_box.width / 2;
 	bounding_box.y = std::max(0, std::min(bounding_box.y, frame_size.height)) - bounding_box.height / 2;
 }
-
-cv::Rect Tracker::get_final_bbox(cv::Size frame_size, float scale_z, torch::Tensor cls, torch::Tensor loc) {
-	torch::Tensor score = convert_score(cls);
-	torch::Tensor pred_bbox = convert_bbox(loc);
-	torch::Tensor penalty = get_penalty(scale_z, pred_bbox);
-	int best_idx = get_best_idx(penalty, score);
-	update_bbox(pred_bbox, best_idx, scale_z, penalty, score, frame_size);
-	return bounding_box;
-}

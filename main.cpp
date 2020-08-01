@@ -55,8 +55,17 @@ int main(int argc, char **argv) {
         else {
             frame_count++;
             track_result res = tracker.track(frame);
-            // cv::rectangle(frame, res.bbox, COLOR_GREEN, 3);
-            cv::addWeighted(frame, 0.77, res.mask, 0.23, -1, frame);
+
+            cv::Point2f vertices[4];
+            res.bbox.points(vertices);
+            for (int i = 0; i < 4; i++) {
+                line(frame, vertices[i], vertices[(i + 1) % 4], COLOR_GREEN, 3);
+            }
+
+            if (!res.mask.empty()) {
+                cv::addWeighted(frame, 0.77, res.mask, 0.23, -1, frame);
+            }
+
             cv::putText(
                 frame,
                 std::to_string(frame_count / (std::chrono::duration<double>(std::chrono::steady_clock::now() - time_start)).count()) + " FPS",

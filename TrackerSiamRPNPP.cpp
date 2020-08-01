@@ -49,7 +49,13 @@ track_result TrackerSiamRPNPP::track(cv::Mat frame) {
 	cls /= (float)rpns.size();
 	loc /= (float)rpns.size();
 
+	torch::Tensor score = convert_score(cls);
+	torch::Tensor pred_bbox = convert_bbox(loc);
+	torch::Tensor penalty = get_penalty(scale_z, pred_bbox);
+	int best_idx = get_best_idx(penalty, score);
+	update_bbox(pred_bbox, best_idx, scale_z, penalty, score, frame.size());
+
 	track_result res;
-	res.bbox = get_final_bbox(frame.size(), scale_z, cls, loc);
+	res.bbox = rectToRotatedRect(bounding_box);
 	return res;
 }
