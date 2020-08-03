@@ -23,6 +23,7 @@ int main(int argc, char **argv) {
     mask_model.mask_head = torch::jit::load("siammask_mask_head.pt", torch::kCUDA);
     mask_model.refine_head = torch::jit::load("siammask_refine_head.pt", torch::kCUDA);
     TrackerSiamMask tracker_siam_mask(mask_model);
+    tracker_siam_mask.load_networks_instantly();
 
     // SiamRPN++
     siam_rpnpp_model rpnpp_model;
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
         rpnpp_model.rpns.push_back(rpn);
     }
     TrackerSiamRPNPP tracker_siam_rpnpp(rpnpp_model);
+    tracker_siam_rpnpp.load_networks_instantly();
 
     // Start with SiamMask
     Tracker* tracker = &tracker_siam_mask;
