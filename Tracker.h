@@ -8,6 +8,7 @@ typedef torch::jit::script::Module TorchModule;
 struct track_result {
     cv::RotatedRect bbox;
     cv::Mat mask;
+    std::vector<cv::Mat> contours;
 };
 
 class Tracker {

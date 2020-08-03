@@ -95,15 +95,15 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 	cv::warpAffine(mat_mask, res.mask, mapping, frame_size, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
 	res.mask = res.mask > MASK_THRESHOLD;
 
-	std::vector<cv::Mat> contours;
-	cv::findContours(res.mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
-	if (contours.size() > 0) {
-		cv::Mat largest_contour = contours[0];
-		double largest_contour_area = cv::contourArea(contours[0]);
-		for (int i = 1; i < contours.size(); i++) {
-			double area = cv::contourArea(contours[i]);
+	// TODO: only cache `res.contours` when needed
+	cv::findContours(res.mask, res.contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+	if (res.contours.size() > 0) {
+		cv::Mat largest_contour = res.contours[0];
+		double largest_contour_area = cv::contourArea(res.contours[0]);
+		for (int i = 1; i < res.contours.size(); i++) {
+			double area = cv::contourArea(res.contours[i]);
 			if (area > largest_contour_area) {
-				largest_contour = contours[i];
+				largest_contour = res.contours[i];
 				largest_contour_area = area;
 			}
 		}
