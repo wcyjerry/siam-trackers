@@ -18,7 +18,8 @@ class Tracker {
     int obj_class_id;
     std::string obj_class_name;
 
-    virtual torch::List<torch::Tensor> backbone_forward(torch::Tensor crop) = 0;
+    virtual torch::List<torch::Tensor> backbone_forward(torch::Tensor input) = 0;
+    virtual torch::List<torch::Tensor> neck_forward(torch::List<torch::Tensor> input) = 0;
 
     // TODO: What are these
     torch::Tensor change(torch::Tensor r);
@@ -42,12 +43,9 @@ protected:
     float TRACK_WINDOW_INFLUENCE;
     float TRACK_LR;
 
-    bool is_mask;
-
-    TorchModule neck;
     cv::Rect bounding_box;
 
-    Tracker(TorchModule neck) : neck(neck) {
+    Tracker() {
         generate_anchors();
     };
 

@@ -3,16 +3,16 @@
 const int TrackerSiamMask::BACKBONE_USED_LAYERS[BACKBONE_USED_LAYERS_NUM] = { 2, 6, 7 };
 const float TrackerSiamMask::MASK_THRESHOLD = 0.25f;
 
-torch::List<torch::Tensor> TrackerSiamMask::backbone_forward(torch::Tensor crop) {
-	torch::Tensor x = backbone_conv.forward({ crop }).toTensor();
-	x = backbone_bn.forward({ x }).toTensor();
+torch::List<torch::Tensor> TrackerSiamMask::backbone_forward(torch::Tensor input) {
+	torch::Tensor x = model.backbone_conv.forward({ input }).toTensor();
+	x = model.backbone_bn.forward({ x }).toTensor();
 	torch::Tensor x_ = torch::relu(x);
 	x = torch::max_pool2d(x_, 3, 2, 1);
 
 	torch::List<torch::Tensor> out { x_ };
 	int nextUsedLayerIdx = 0;
-	for (int i = 0; i < backbone_layers.size(); i++) {
-		x = backbone_layers[i].forward({ x }).toTensor();
+	for (int i = 0; i < model.backbone_layers.size(); i++) {
+		x = model.backbone_layers[i].forward({ x }).toTensor();
 		if (i == BACKBONE_USED_LAYERS[nextUsedLayerIdx]) {
 			out.push_back(x);
 			nextUsedLayerIdx++;
@@ -21,16 +21,20 @@ torch::List<torch::Tensor> TrackerSiamMask::backbone_forward(torch::Tensor crop)
 	return out;
 }
 
+torch::List<torch::Tensor> TrackerSiamMask::neck_forward(torch::List<torch::Tensor> input) {
+	return model.neck.forward({ persist_only_last(input) }).toTensorList();
+}
+
 void TrackerSiamMask::load_networks_instantly() {
 	torch::Tensor z_crop = torch::zeros({ 1, 3, EXEMPLAR_SIZE, EXEMPLAR_SIZE }).cuda();
 	torch::List<torch::Tensor> pre_zf = backbone_forward(z_crop);
-	torch::List<torch::Tensor> zf = neck.forward({ persist_only_last(pre_zf) }).toTensorList();
+	torch::List<torch::Tensor> zf = neck_forward(pre_zf);
 
 	torch::Tensor x_crop = torch::zeros({ 1, 3, INSTANCE_SIZE, INSTANCE_SIZE }).cuda();
 	torch::List<torch::Tensor> pre_xf = backbone_forward(x_crop);;
-	torch::List<torch::Tensor> xf = neck.forward({ persist_only_last(pre_xf) }).toTensorList();
+	torch::List<torch::Tensor> xf = neck_forward(pre_xf);
 
-	rpn_head.forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
+	model.rpn_head.forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
 }
 
 track_result TrackerSiamMask::track(cv::Mat frame) {
@@ -47,9 +51,9 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 	for (int i = 0; i < pre_xf.size() - 1; i++) {
 		pre_xf_head.push_back(pre_xf.get(i));
 	}
-	torch::List<torch::Tensor> xf = neck.forward({ persist_only_last(pre_xf) }).toTensorList();
+	torch::List<torch::Tensor> xf = neck_forward(pre_xf);
 
-	std::vector<torch::IValue> res_rpn = rpn_head.forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
+	std::vector<torch::IValue> res_rpn = model.rpn_head.forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
 	torch::Tensor cls = res_rpn[0].toTensor().cuda();
 	torch::Tensor loc = res_rpn[1].toTensor().cuda();
 
@@ -63,10 +67,10 @@ track_result TrackerSiamMask::track(cv::Mat frame) {
 	std::vector<int> pos = unravel_index(best_idx, { 5, SCORE_SIZE, SCORE_SIZE });
 	int delta_x = pos[2], delta_y = pos[1];
 
-	std::vector<torch::IValue> res_mask = mask_head.forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
+	std::vector<torch::IValue> res_mask = model.mask_head.forward({ zf.get(0), xf.get(0) }).toTuple()->elements();
 	torch::Tensor mask_corr_feature = res_mask[1].toTensor().cuda();
 
-	torch::Tensor mask = refine_head.forward({
+	torch::Tensor mask = model.refine_head.forward({
 		pre_xf_head,
 		mask_corr_feature,
 		std::tuple<int, int>(delta_y, delta_x)

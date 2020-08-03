@@ -159,8 +159,7 @@ void Tracker::init(cv::Mat frame, cv::Rect roi, std::string obj_id, int obj_clas
 
 	torch::Tensor z_crop = get_subwindow(frame, EXEMPLAR_SIZE, calculate_s_z());
 	torch::List<torch::Tensor> pre_zf = backbone_forward(z_crop);
-	if (is_mask) pre_zf = persist_only_last(pre_zf);
-	zf = neck.forward({ pre_zf }).toTensorList();
+	zf = neck_forward(pre_zf);
 
 	ready_to_track = true;
 
