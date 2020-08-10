@@ -90,7 +90,6 @@ public:
     void stop_tracking() {
         // TODO: More proper cleanups
         ready_to_track = false;
-        bounding_box = cv::Rect();
     }
 
     std::string get_obj_id() {
