@@ -48,7 +48,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\Software\opencv\build\install\x64\vc16\lib;C:\Program Files (x86)\Torch\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>c10.lib;torch_cpu.lib;torch_cuda.lib;/INCLUDE:?warp_size@cuda@at@@YAHXZ;opencv_core450.lib;opencv_highgui450.lib;opencv_imgproc450.lib;opencv_videoio450.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>c10.lib;torch_cpu.lib;torch_cuda.lib;opencv_core450.lib;opencv_highgui450.lib;opencv_imgproc450.lib;opencv_videoio450.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
