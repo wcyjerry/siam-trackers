@@ -3,13 +3,18 @@
 #include <opencv2/opencv.hpp>
 #include "TrackerSiamRPNPP.h"
 #include "TrackerSiamMask.h"
+
+#ifdef _WIN32
 #include "windows.h"
+#endif
 
 const cv::Scalar COLOR_BLUE(255, 0, 0);
 
 int main(int argc, char **argv) {
+    #ifdef _WIN32
     _putenv_s("OMP_NUM_THREADS", "8");
     LoadLibraryA("torch_cuda.dll");
+    #endif
 
     // TODO: Should we `eval` these modules?
     // SiamMask
