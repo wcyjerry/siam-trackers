@@ -48,7 +48,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\Software\opencv\build\install\x64\vc16\lib;C:\Program Files (x86)\Torch\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>c10.lib;torch_cpu.lib;torch_cuda.lib;opencv_core451.lib;opencv_highgui451.lib;opencv_imgproc451.lib;opencv_videoio451.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>c10.lib;torch_cpu.lib;torch_cuda.lib;opencv_core452.lib;opencv_highgui452.lib;opencv_imgproc452.lib;opencv_videoio452.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
