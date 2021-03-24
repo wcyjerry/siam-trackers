@@ -153,7 +153,7 @@ void Tracker::generate_anchors() {
 	window = torch::ger(hanning, hanning).flatten().repeat(anchor_num).reshape({ SCORE_SIZE * SCORE_SIZE * anchor_num, 1 });
 }
 
-void Tracker::init(cv::Mat frame, cv::Rect roi, std::string obj_id, int obj_class_id, std::string obj_class_name) {
+void Tracker::init(cv::Mat frame, cv::Rect roi, std::string obj_id, int obj_class_id, std::string obj_class_name, std::string aruco_marker_id) {
 	bounding_box = roi;
 	channel_average = cv::mean(frame);
 
@@ -166,6 +166,7 @@ void Tracker::init(cv::Mat frame, cv::Rect roi, std::string obj_id, int obj_clas
 	this->obj_id = obj_id;
 	this->obj_class_id = obj_class_id;
 	this->obj_class_name = obj_class_name;
+	this->aruco_marker_id = aruco_marker_id;
 }
 
 torch::Tensor Tracker::get_penalty(float scale_z, torch::Tensor pred_bbox) {
