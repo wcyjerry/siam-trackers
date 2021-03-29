@@ -17,6 +17,7 @@ class Tracker {
     std::string obj_id;
     int obj_class_id;
     std::string obj_class_name;
+    std::string aruco_marker_id;
 
     virtual torch::List<torch::Tensor> backbone_forward(torch::Tensor input) = 0;
     virtual torch::List<torch::Tensor> neck_forward(torch::List<torch::Tensor> input) = 0;
@@ -78,7 +79,7 @@ protected:
 
 public:
 
-    virtual void init(cv::Mat frame, cv::Rect roi, std::string obj_id = "", int obj_class_id = -1, std::string obj_class_name = "");
+    virtual void init(cv::Mat frame, cv::Rect roi, std::string obj_id = "", int obj_class_id = -1, std::string obj_class_name = "", std::string aruco_marker_id = "");
     // TODO: https://gitlab.kikaitech.io/kikai-ai/siam-trackers/issues/11
     virtual void load_networks_instantly() = 0;
     virtual track_result track(cv::Mat frame) = 0;
@@ -106,5 +107,9 @@ public:
 
     cv::Rect get_bounding_box() {
         return bounding_box;
+    }
+
+    std::string get_aruco_marker_id() {
+        return aruco_marker_id;
     }
 };
